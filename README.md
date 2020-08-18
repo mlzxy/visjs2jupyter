@@ -1,85 +1,90 @@
-# visJS2jupyter
+# 簇可视化工具
 
-visJS2jupyter is a tool to bring the interactivity of networks created with vis.js into jupyter notebook cells, authored by members of the [UCSD Center for Computational Biology & Bioinformatics](http://compbio.ucsd.edu)
+modified from https://github.com/ucsd-ccbb/visJS2jupyter
 
-There's also an option to get the output in a format compatible with Zeppelin notebook, ready to save as a standalone HTML file, or code to embed in your own HTML.
+## 安装
 
-For full documentation of the tool, see https://ucsd-ccbb.github.io/visJS2jupyter/
-
-#### Please cite our accompanying paper:  
-Rosenthal, S. B., Len, J., Webster, M., Gary, A., Birmingham, A., & Fisch, K. M. (2017). Interactive network visualization in Jupyter notebooks: visJS2jupyter. Bioinformatics.
-
-## Getting Started
-
-These instructions will get you a copy of the package up and running on your local machine.
-
-### Prerequisites
-
-You must have Jupyter notebook already installed. Visit [here](http://jupyter.org/install.html) for more information.
-
-Install matplotlib before using visJS2jupyter. Visit [here](http://matplotlib.org/users/installing.html) for more information.
-
-To use the visualizations module, install [networkX](https://networkx.github.io/) and [py2cytoscape](https://github.com/idekerlab/py2cytoscape):
-
-```
-pip install networkx==1.11
-pip install py2cytoscape
+```bash
+python3 -m pip install git+ssh://git@git-core.megvii-inc.com/fdir/visjs2jupyter@master --user
 ```
 
-### Installing
+同时安装 https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe , 让浏览器支持外部资源跨域访问
 
-visJS2jupyter supports both Python 2.7 and 3.4.
 
-You can install visJS2jupyter using pip:
+## 使用例子
 
-```
-pip install visJS2jupyter
-```
+[notebook](./可视化簇例子.ipynb)
 
-In your Jupyter notebook, first import matplotlib:
+引用需要的库
 
-```
-import matplotlib
-```
-
-To import visJS_module, use the following:
-
-```
-import visJS2jupyter.visJS_module
+```python
+from importlib import reload
+import matplotlib as mpl
+import networkx as nx
+import visJS2jupyter.visJS_module as visJS_module
+from tqdm.auto import tqdm
+import random
+reload(visJS_module)
 ```
 
-To import visualizations, use the following:
 
+生成一个100节点的图
+
+```python
+# create a simple graph
+G = nx.connected_watts_strogatz_graph(100,2,.2)
+nodes = list(G.nodes()) # type cast to list in order to make compatible with networkx 1.11 and 2.0
+edges = list(G.edges()) # for nx 2.0, returns an "EdgeView" object rather than an iterable
 ```
-import visJS2jupyter.visualizations
+
+
+生成图的 layout，并设置每个节点的图片 `node_image`
+
+```python
+degree = dict(G.degree())
+nx.set_node_attributes(G, name = 'degree', values = degree)
+
+pos = nx.spring_layout(G)
+
+nodes_dict = [{"id":n,
+               "degree":nx.degree(G,n),
+               "node_shape": 'image', # must set node shape to "image"
+               "x":pos[n][0]*700,
+                'node_image': "https://nv.iap.wh-a.brainpp.cn/erjin/1422884,11b3f80006c6aceda?longest=80",
+               "y":pos[n][1]*700} for n in tqdm(nodes)
+              ]
 ```
 
-## Features and Examples
-A simple use example with default parameters may be found here http://bl.ocks.org/m1webste/raw/be7be9d1b2c88e5549cf79b7edbc8444/ .  In the example provided, we show how to display a graph created with NetworkX using visJS2jupyter.  The networks displayed within Jupyter notebook cells may be dragged, clicked, and hovered on, and zooming is enabled within the window.  
 
-For an example of how more complex styles may be added to a network, see http://bl.ocks.org/brinrosenthal/raw/658325f6e0db7419625a31c883313e9b/. Nodes and edges may be styled with properties available from vis.js networks (see http://visjs.org/docs/network/ for a list and description of properties).  The main function is 'visjs_network', which requires two inputs which describe the nodes and edges in the network- 'nodes_dict', and edges_dict'.  The other arguments are optional, and apply general styles to the graph, such as sizes, highlight colors, and physics properties of the graph.
+生成边，并随机设置边的权重
 
-An interactive use example of visJS2jupyter may be found [here](http://bl.ocks.org/brinrosenthal/raw/89ef33bebbf2d360099029666b1e8bea/) (scroll to the bottom to see the network).  In this example, we display the bipartite network composed of diseases in [The Cancer Genome Atlas](http://cancergenome.nih.gov/) and the top 25 most common mutations in each disease.  We also overlay information about drugs which target those mutations.  Genes which have a drug targeting them are displayed with a bold black outline.  The user may hover over each gene to get a list of associated drugs.
 
-For an example of how to style a multigraph using visJS2jupyter, see https://bl.ocks.org/m1webste/raw/db4aeda3f3e4a8840f08182f2e5d4608/ This notebook demonstrates how to use visJS2jupyter to visualize a NetworkX multigraph inside a jupyter notebook cell. visJS2jupyter can be used to manipulate numerous graph styling parameters (edge width, node color, node spacing, etc.). In this notebook, we exemplify manipulating a small subset of these features. Notibly, we demonstrate how to manipulate node and edge colors for a multigraph based off of node and edge attributes.
+```python
+node_map = dict(zip(nodes,range(len(nodes))))
 
-#### Visualizations
-Supplementary module, containing frequently used network visualizations
+# set per-edge attributes
+edges_dict = [{"source":node_map[edges[i][0]], "target":node_map[edges[i][1]], "id": str(random.random()),
+              "color":"gray"} for i in range(len(edges))]
+```
 
-1) **draw_graph_overlap** takes in two graphs and displays their overlap. Intersecting nodes are triangles and non-intersecting nodes are either circles or squares, depending on which graph they belong to. An interactive example may be found [here](https://bl.ocks.org/julialen/raw/d21c9d378cb09b5a7181497101996727/). In this example, we graph the union of two networks of 10 nodes each. The user can hover over each node to see the graph it belongs to and the node name. 
+进行可视化
 
-2) **draw_heat_prop** simulates heat propagation on the network initialized from a given set of seed nodes. It takes in a graph and a list of seed nodes. An interactive example may be found [here](https://bl.ocks.org/julialen/raw/82c316048ade650effbff3fd9eaddccd/). 
+```python
+visJS_module.visjs_network(nodes_dict,edges_dict,
+                          node_size_multiplier=10,
+                          node_size_transform = '',
+                          node_font_size=25,
+                          physics_enabled=True,
+                          edge_color_highlight='#8A324E',
+                          edge_color_hover='#8BADD3',
+                          edge_width=3,
+                          max_velocity=15,
+                          min_velocity=1)
+```
 
-3) **draw_colocalization** similarly draws the heat propagation of the graph but with two sets of seed nodes. Another interactive example can be found [here](https://bl.ocks.org/julialen/raw/a82040bdc8b5ba3ca866489db795af74/).
 
-## Authors
+![](./docs/graph-1.jpg)
 
-* **Brin Rosenthal, PhD** (sbrosenthal@ucsd.edu)
-* **Julia Len** (jlen@ucsd.edu)
-* **Mikayla Webster** (m1webste@ucsd.edu)
-* **Aaron Gary** (agary@ucsd.edu)
-* **Kathleen Fisch, PhD** (kfisch@ucsd.edu)
+还可以进行放大和拖拽
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+![](./docs/graph-2.jpg)
