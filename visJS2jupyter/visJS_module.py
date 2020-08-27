@@ -932,7 +932,7 @@ def create_graph_style_file(filename='visJS_html_file_temp',
                             # only for image and circular image: true means use image size, false use our defined node size
                             node_shape_use_image_size=False,
                             # only for image: draws border around image icon
-                            node_shape_use_border_with_image=False,
+                            node_shape_use_border_with_image=True,
                             node_label_field='id',  # field that nodes will be labeled with
                             # field that determines which nodes are more important thus should be scaled bigger
                             node_size_field='degree',
