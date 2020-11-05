@@ -2,6 +2,8 @@
 
 modified from https://github.com/ucsd-ccbb/visJS2jupyter
 
+帮助脚本 https://git-core.megvii-inc.com/snippets/324 （把这个脚本放入 jupyter notebook 运行，然后调用其中 `display_graph` 接口)
+
 ## 安装
 
 ```bash
