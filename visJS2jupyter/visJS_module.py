@@ -183,6 +183,9 @@ def visjs_network(nodes_dict, edges_dict,
                   tooltip_delay=300,
                   zoom_view=True,  # When true, the user can zoom in.
 
+                  stablization_enable=True,
+                  num_render_iteration=1000,
+
                   # configuration
                   # Toggle the configuration interface on or off. This is an optional parameter. If left undefined and any of the other properties of this object are defined, this will be set to true.
                   config_enabled=False,
@@ -213,6 +216,8 @@ def visjs_network(nodes_dict, edges_dict,
                   export_edge_attribute=None,
                   override_graph_size_to_max=False,
                   output="jupyter",
+
+                  hierarchical=False
                   ):
     '''
     This function creates an iframe for the input graph
@@ -437,6 +442,8 @@ def visjs_network(nodes_dict, edges_dict,
                                      graph_id=graph_id,
                                      override_graph_size_to_max=override_graph_size_to_max,
                                      output=output,
+
+                                     hierarchical=hierarchical
                                      )
 
     if output == "jupyter":
@@ -1042,6 +1049,9 @@ def create_graph_style_file(filename='visJS_html_file_temp',
                             # Show the generate options button at the bottom of the configurator.
                             showButton=True,
 
+                            stablization_enable=True,
+                            num_render_iteration=1000,
+
                             # other stuff
                             border_color='white',
                             physics_enabled=True,
@@ -1058,6 +1068,8 @@ def create_graph_style_file(filename='visJS_html_file_temp',
                             graph_id=0,
                             override_graph_size_to_max=False,
                             output="jupyter",
+
+                            hierarchical=False
                             ):
     '''
 
@@ -1107,6 +1119,7 @@ def create_graph_style_file(filename='visJS_html_file_temp',
     zoom_view = stringify_bool(zoom_view)
     config_enabled = stringify_bool(config_enabled)
     showButton = stringify_bool(showButton)
+    hierarchical = stringify_bool(hierarchical)
 
     graph_width = scaling_factor * graph_width
     graph_height = scaling_factor * graph_height
@@ -1229,7 +1242,7 @@ def create_graph_style_file(filename='visJS_html_file_temp',
           layout: {
             improvedLayout:true,
             hierarchical: {
-                enabled:false,
+                enabled:""" + hierarchical + """,
                 levelSeparation: 150,
                 direction: 'UD',
                 sortMethod: 'hubsize'
@@ -1305,15 +1318,15 @@ def create_graph_style_file(filename='visJS_html_file_temp',
             minVelocity: """+str(min_velocity)+""",
             solver: 'barnesHut',
             adaptiveTimestep: true,
-            stabilization: {
-              enabled: true,
-              iterations: 1000,
+            stabilization: { """ + f"""
+              enabled: {'true' if stablization_enable else 'false'},
+              iterations: {num_render_iteration},
               updateInterval: 100,
               onlyDynamicEdges: false,
-              fit: true
+              fit: true """ + """
             }
           }
-       };
+       }; 
        var python_nodes = visNodes;
        var nodeArray = [];
        for(var i=0; i<python_nodes.length; i++){
