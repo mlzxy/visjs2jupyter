@@ -119,7 +119,7 @@
                 enabled:false,
                 levelSeparation: 150,
                 direction: 'UD',
-                sortMethod: 'hubsize'
+                sortMethod: 'directed'
             },
             randomSeed: 780555
           },
@@ -192,15 +192,15 @@
             minVelocity: 1,
             solver: 'barnesHut',
             adaptiveTimestep: true,
-            stabilization: {
+            stabilization: { 
               enabled: true,
               iterations: 1000,
               updateInterval: 100,
               onlyDynamicEdges: false,
-              fit: true
+              fit: true 
             }
           }
-       };
+       }; 
        var python_nodes = visNodes;
        var nodeArray = [];
        for(var i=0; i<python_nodes.length; i++){
