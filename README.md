@@ -7,7 +7,7 @@ modified from https://github.com/ucsd-ccbb/visJS2jupyter
 ## Installation
 
 ```bash
-python3 -m pip install git+ssh://git@git-core.megvii-inc.com/fdir/visjs2jupyter@master --user
+python3 -m pip install git+https://github.com/mlzxy/visjs2jupyter@main --user
 ```
 
 And install https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe , to make the browser support CORS request. 
