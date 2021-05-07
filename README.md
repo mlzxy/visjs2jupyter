@@ -1,6 +1,6 @@
 # Visualization Tool for Image Clustering
 
-modified from https://github.com/ucsd-ccbb/visJS2jupyter to support customize image on each node.
+modified from https://github.com/ucsd-ccbb/visJS2jupyter to support to customize image on each node.
 
 
 ## Installation
