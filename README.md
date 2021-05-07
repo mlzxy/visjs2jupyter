@@ -1,6 +1,6 @@
 # Visualization Tool for Image Clustering
 
-modified from https://github.com/ucsd-ccbb/visJS2jupyter
+modified from https://github.com/ucsd-ccbb/visJS2jupyter to support customize image on each node.
 
 
 ## Installation
@@ -9,7 +9,7 @@ modified from https://github.com/ucsd-ccbb/visJS2jupyter
 python3 -m pip install git+https://github.com/mlzxy/visjs2jupyter@main --user
 ```
 
-And install https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe , to make the browser support CORS request. 
+And install https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe , to make the browser accept CORS request. 
 
 
 ## Example
